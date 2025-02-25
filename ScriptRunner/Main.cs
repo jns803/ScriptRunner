@@ -25,9 +25,9 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
         /// </summary>
         public string Description => Resources.plugin_description;
 
-        private const string Setting = nameof(Setting);
-        // current value of the setting
-        private bool _setting;
+        private const string ConfigFilePathSettingKey = "config-file-path";
+        private string _configFilePath = "";
+
         private PluginInitContext _context;
         private string _iconPath;
         private bool _disposed;
@@ -35,15 +35,16 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
         /// <summary>
         /// Additional options for the plugin.
         /// </summary>
-        public IEnumerable<PluginAdditionalOption> AdditionalOptions => new List<PluginAdditionalOption>()
-        {
+        public IEnumerable<PluginAdditionalOption> AdditionalOptions =>
+        [
             new PluginAdditionalOption()
             {
-                PluginOptionType= PluginAdditionalOption.AdditionalOptionType.Checkbox,
-                Key = Setting,
-                DisplayLabel = Resources.plugin_setting,
+                PluginOptionType= PluginAdditionalOption.AdditionalOptionType.Textbox,
+                Key = ConfigFilePathSettingKey,
+                DisplayLabel = Resources.config_file_setting_title,
+                DisplayDescription = Resources.config_file_setting_description,
             },
-        };
+        ];
 
         /// <summary>
         /// Updates settings.
@@ -51,7 +52,11 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
         /// <param name="settings">The plugin settings.</param>
         public void UpdateSettings(PowerLauncherPluginSettings settings)
         {
-            _setting = settings?.AdditionalOptions?.FirstOrDefault(x => x.Key == Setting)?.Value ?? false;
+            var configFilePath = settings?
+                .AdditionalOptions?
+                .FirstOrDefault(x => x.Key == ConfigFilePathSettingKey)?
+                .TextValue;
+            _configFilePath = configFilePath ?? "";
         }
 
         /// <summary>
