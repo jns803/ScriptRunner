@@ -10,18 +10,31 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
 {
     public class Main : IPlugin, IPluginI18n, IContextMenu, ISettingProvider, IReloadable, IDisposable, IDelayedExecutionPlugin
     {
+        /// <summary>
+        /// ID of the plugin.
+        /// </summary>
+        public static string PluginID => "41b5ed86908f4210a41520596cf4e533";
+
+        /// <summary>
+        /// Name of the plugin.
+        /// </summary>
+        public string Name => Resources.plugin_name;
+
+        /// <summary>
+        /// Description of the plugin.
+        /// </summary>
+        public string Description => Resources.plugin_description;
+
         private const string Setting = nameof(Setting);
         // current value of the setting
         private bool _setting;
         private PluginInitContext _context;
         private string _iconPath;
         private bool _disposed;
-        public string Name => Resources.plugin_name;
-        public string Description => Resources.plugin_description;
-        // TODO: remove dash from ID below and inside plugin.json
-        public static string PluginID => "41b5ed86908f4210a41520596cf4e533";
 
-        // TODO: add additional options (optional)
+        /// <summary>
+        /// Additional options for the plugin.
+        /// </summary>
         public IEnumerable<PluginAdditionalOption> AdditionalOptions => new List<PluginAdditionalOption>()
         {
             new PluginAdditionalOption()
@@ -32,18 +45,31 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             },
         };
 
+        /// <summary>
+        /// Updates settings.
+        /// </summary>
+        /// <param name="settings">The plugin settings.</param>
         public void UpdateSettings(PowerLauncherPluginSettings settings)
         {
             _setting = settings?.AdditionalOptions?.FirstOrDefault(x => x.Key == Setting)?.Value ?? false;
         }
 
-        // TODO: return context menus for each Result (optional)
+        /// <summary>
+        /// Return a list context menu entries for a given <see cref="Result"/> (shown at the right side of the result).
+        /// </summary>
+        /// <param name="selectedResult">The <see cref="Result"/> for the list with context menu entries.</param>
+        /// <returns>A list context menu entries.</returns>
+        /// <remarks>probably I dont need this...</remarks>
         public List<ContextMenuResult> LoadContextMenus(Result selectedResult)
         {
             return new List<ContextMenuResult>(0);
         }
 
-        // TODO: return query results
+        /// <summary>
+        /// Return a filtered list, based on the given query.
+        /// </summary>
+        /// <param name="query">The query to filter the list.</param>
+        /// <returns>A filtered list, can be empty when nothing was found.</returns>
         public List<Result> Query(Query query)
         {
             ArgumentNullException.ThrowIfNull(query);
@@ -86,6 +112,10 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             return results;
         }
 
+        /// <summary>
+        /// Initialize the plugin with the given <see cref="PluginInitContext"/>.
+        /// </summary>
+        /// <param name="context">The <see cref="PluginInitContext"/> for this plugin.</param>
         public void Init(PluginInitContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
