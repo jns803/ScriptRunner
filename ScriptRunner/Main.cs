@@ -19,7 +19,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
         public string Name => Resources.plugin_name;
         public string Description => Resources.plugin_description;
         // TODO: remove dash from ID below and inside plugin.json
-        public static string PluginID => "41b5ed86-908f-4210-a415-20596cf4e533";
+        public static string PluginID => "41b5ed86908f4210a41520596cf4e533";
 
         // TODO: add additional options (optional)
         public IEnumerable<PluginAdditionalOption> AdditionalOptions => new List<PluginAdditionalOption>()
