@@ -1,0 +1,14 @@
+{
+	"ID": "41b5ed86-908f-4210-a415-20596cf4e533",
+	"ActionKeyword": "plug",
+	"Disabled": false,
+	"IsGlobal": false,
+	"Name": "ScriptRunner",
+	"Author": "",
+	"Version": "1.0.0",
+	"Language": "csharp",
+	"Website": "",
+	"ExecuteFileName": "Community.PowerToys.Run.Plugin.ScriptRunner.dll",
+	"IcoPathDark": "Images\\ScriptRunner.dark.png",
+	"IcoPathLight": "Images\\ScriptRunner.light.png"
+}
