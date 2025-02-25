@@ -67,7 +67,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
         /// <remarks>probably I dont need this...</remarks>
         public List<ContextMenuResult> LoadContextMenus(Result selectedResult)
         {
-            return new List<ContextMenuResult>(0);
+            return [];
         }
 
         /// <summary>
