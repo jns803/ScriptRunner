@@ -118,10 +118,10 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="plugin_description" xml:space="preserve">
-    <value>ScriptRunner plugin</value>
+    <value>Search and run custom scripts</value>
   </data>
   <data name="plugin_name" xml:space="preserve">
-    <value>ScriptRunner</value>
+    <value>Script Runner</value>
   </data>
   <data name="config_file_setting_title" xml:space="preserve">
     <value>Path to config json</value>

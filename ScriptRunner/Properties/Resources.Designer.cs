@@ -79,7 +79,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ScriptRunner plugin.
+        ///   Looks up a localized string similar to Search and run custom scripts.
         /// </summary>
         internal static string plugin_description {
             get {
@@ -88,7 +88,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ScriptRunner.
+        ///   Looks up a localized string similar to Script Runner.
         /// </summary>
         internal static string plugin_name {
             get {
