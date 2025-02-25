@@ -3,7 +3,7 @@
 Push-Location
 Set-Location $PSScriptRoot
 
-sudo {
+gsudo {
 	Start-Job { Stop-Process -Name PowerToys* } | Wait-Job > $null
 
 	# change this to your PowerToys installation path
