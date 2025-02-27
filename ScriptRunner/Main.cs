@@ -27,8 +27,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
         /// </summary>
         public string Description => Resources.plugin_description;
 
-        private const string ConfigFilePathSettingKey = "config-file-path";
-        private string _configFilePath = "";
+        private ConfigFile _configFile;
 
         private PluginInitContext _context;
         private string _iconPath;
@@ -42,7 +41,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             new PluginAdditionalOption()
             {
                 PluginOptionType= PluginAdditionalOption.AdditionalOptionType.Textbox,
-                Key = ConfigFilePathSettingKey,
+                Key = ConfigFile.ConfigFilePathSettingKey,
                 DisplayLabel = Resources.config_file_setting_title,
                 DisplayDescription = Resources.config_file_setting_description,
             },
@@ -56,9 +55,9 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
         {
             var configFilePath = settings?
                 .AdditionalOptions?
-                .FirstOrDefault(x => x.Key == ConfigFilePathSettingKey)?
+                .FirstOrDefault(x => x.Key == ConfigFile.ConfigFilePathSettingKey)?
                 .TextValue;
-            _configFilePath = configFilePath ?? "";
+            _configFile.ConfigFilePath = configFilePath ?? "";
         }
 
         /// <summary>
@@ -86,54 +85,14 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             // empty query
             if (string.IsNullOrEmpty(query.Search))
             {
-                results.Add(BuildOpenConfigFileResult());
+                results.Add(_configFile.BuildOpenConfigFileResult());
                 return results;
             }
 
             return results;
         }
 
-        private Result BuildOpenConfigFileResult()
-        {
-            string subTitle;
-            if (string.IsNullOrEmpty(_configFilePath))
-            {
-                subTitle = "Please specify a config json in the plugin options";
-            }
-            else if (!File.Exists(_configFilePath))
-            {
-                subTitle = $"{_configFilePath} does not exist";
-            }
-            else
-            {
-                subTitle = _configFilePath;
-            }
-
-            return new Result
-            {
-                Title = "Open config file",
-                SubTitle = subTitle,
-                QueryTextDisplay = string.Empty,
-                IcoPath = _iconPath,
-                Action = action => OpenConfigFile(),
-            };
-        }
-
-        private bool OpenConfigFile()
-        {
-            if (string.IsNullOrEmpty(_configFilePath) || !File.Exists(_configFilePath))
-            {
-                return false;
-            }
-
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = _configFilePath,
-                UseShellExecute = true,
-            });
-
-            return true;
-        }
+        
 
         // TODO: return delayed query results (optional)
         public List<Result> Query(Query query, bool delayedExecution)
@@ -160,6 +119,8 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _context.API.ThemeChanged += OnThemeChanged;
             UpdateIconPath(_context.API.GetCurrentTheme());
+
+            _configFile = new ConfigFile(() => _iconPath); // TODO
         }
 
         public string GetTranslatedPluginTitle()
