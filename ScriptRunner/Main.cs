@@ -5,6 +5,8 @@ using Microsoft.PowerToys.Settings.UI.Library;
 using Wox.Infrastructure;
 using Wox.Plugin;
 using Wox.Plugin.Logger;
+using System.IO;
+using System.Diagnostics;
 
 namespace Community.PowerToys.Run.Plugin.ScriptRunner
 {
@@ -84,21 +86,53 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             // empty query
             if (string.IsNullOrEmpty(query.Search))
             {
-                results.Add(new Result
-                {
-                    Title = Name,
-                    SubTitle = Description,
-                    QueryTextDisplay = string.Empty,
-                    IcoPath = _iconPath,
-                    Action = action =>
-                    {
-                        return true;
-                    },
-                });
+                results.Add(BuildOpenConfigFileResult());
                 return results;
             }
 
             return results;
+        }
+
+        private Result BuildOpenConfigFileResult()
+        {
+            string subTitle;
+            if (string.IsNullOrEmpty(_configFilePath))
+            {
+                subTitle = "Please specify a config json in the plugin options";
+            }
+            else if (!File.Exists(_configFilePath))
+            {
+                subTitle = $"{_configFilePath} does not exist";
+            }
+            else
+            {
+                subTitle = _configFilePath;
+            }
+
+            return new Result
+            {
+                Title = "Open config file",
+                SubTitle = subTitle,
+                QueryTextDisplay = string.Empty,
+                IcoPath = _iconPath,
+                Action = action => OpenConfigFile(),
+            };
+        }
+
+        private bool OpenConfigFile()
+        {
+            if (string.IsNullOrEmpty(_configFilePath) || !File.Exists(_configFilePath))
+            {
+                return false;
+            }
+
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = _configFilePath,
+                UseShellExecute = true,
+            });
+
+            return true;
         }
 
         // TODO: return delayed query results (optional)
