@@ -93,21 +93,11 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
         {
             ArgumentNullException.ThrowIfNull(query);
 
-            // empty query
-            if (string.IsNullOrEmpty(query.Search))
-            {
-                return [
-                    _configFile.BuildOpenConfigFileResult()
-                ];
-            }
-            else
-            {
-                var scriptDtos = _configFile.LoadScriptDtos();
-                // TODO: validate & transform configs
-                // TODO: filter configs
-                return [.. _resultBuilder.BuildResults(scriptDtos)];
-
-            }
+            var scriptDtos = _configFile.LoadScriptDtos();
+            var results = _resultBuilder.BuildResults(scriptDtos)
+                .Append(_configFile.BuildOpenConfigFileResult())
+                .Where(r => r.Title.Contains(query.Search));
+            return [.. results];
         }
 
 
