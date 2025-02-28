@@ -2,16 +2,20 @@ using Community.PowerToys.Run.Plugin.ScriptRunner.Properties;
 using System.Windows.Controls;
 using ManagedCommon;
 using Microsoft.PowerToys.Settings.UI.Library;
-using Wox.Infrastructure;
 using Wox.Plugin;
-using Wox.Plugin.Logger;
-using System.IO;
-using System.Diagnostics;
 
 namespace Community.PowerToys.Run.Plugin.ScriptRunner
 {
     public class Main : IPlugin, IPluginI18n, IContextMenu, ISettingProvider, IReloadable, IDisposable, IDelayedExecutionPlugin
     {
+        // Note:
+        // Methods are basically called in the following order:
+        // - Constructor --> logical
+        // - UpdateSettings()  --> unexpected
+        // - Init()
+        // - Query()
+
+
         /// <summary>
         /// ID of the plugin.
         /// </summary>
@@ -29,9 +33,16 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
 
         private ConfigFile _configFile;
 
-        private PluginInitContext _context;
-        private string _iconPath;
+        private PluginInitContext? _context;
         private bool _disposed;
+
+        private delegate void UdateIconPathDelegate(Theme theme);
+        private UdateIconPathDelegate? _updateIconPath;
+
+        public Main()
+        {
+            _configFile = new ConfigFile();
+        }
 
         /// <summary>
         /// Additional options for the plugin.
@@ -92,7 +103,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             return results;
         }
 
-        
+
 
         // TODO: return delayed query results (optional)
         public List<Result> Query(Query query, bool delayedExecution)
@@ -118,9 +129,9 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _context.API.ThemeChanged += OnThemeChanged;
-            UpdateIconPath(_context.API.GetCurrentTheme());
 
-            _configFile = new ConfigFile(() => _iconPath); // TODO
+            _updateIconPath += _configFile.UpdateIconPath;
+            _updateIconPath(_context.API.GetCurrentTheme());
         }
 
         public string GetTranslatedPluginTitle()
@@ -135,19 +146,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
 
         private void OnThemeChanged(Theme oldTheme, Theme newTheme)
         {
-            UpdateIconPath(newTheme);
-        }
-
-        private void UpdateIconPath(Theme theme)
-        {
-            if (theme == Theme.Light || theme == Theme.HighContrastWhite)
-            {
-                _iconPath = "Images/ScriptRunner.light.png";
-            }
-            else
-            {
-                _iconPath = "Images/ScriptRunner.dark.png";
-            }
+            _updateIconPath?.Invoke(newTheme);
         }
 
         public Control CreateSettingPanel()
@@ -162,7 +161,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
                 return;
             }
 
-            UpdateIconPath(_context.API.GetCurrentTheme());
+            _updateIconPath?.Invoke(_context.API.GetCurrentTheme());
         }
 
         public void Dispose()

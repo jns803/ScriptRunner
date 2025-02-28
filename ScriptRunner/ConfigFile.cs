@@ -1,4 +1,4 @@
-using System;
+using ManagedCommon;
 using System.Diagnostics;
 using System.IO;
 using Wox.Plugin;
@@ -7,18 +7,19 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
 {
     class ConfigFile
     {
-        private readonly Func<string> _getIconPath;
+        private string? _iconPath;
         public const string ConfigFilePathSettingKey = "config-file-path";
         public string ConfigFilePath { get; set; }
 
-        public ConfigFile(Func<string> getIconPath)
+        public ConfigFile()
         {
             ConfigFilePath = "";
-            _getIconPath = getIconPath ?? throw new ArgumentNullException(nameof(getIconPath));
         }
 
         public Result BuildOpenConfigFileResult()
         {
+            ArgumentNullException.ThrowIfNull(_iconPath);
+
             string subTitle;
             if (string.IsNullOrEmpty(ConfigFilePath))
             {
@@ -38,7 +39,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
                 Title = "Open config file",
                 SubTitle = subTitle,
                 QueryTextDisplay = string.Empty,
-                IcoPath = _getIconPath(),
+                IcoPath = _iconPath,
                 Action = action => OpenConfigFile(),
             };
         }
@@ -57,6 +58,15 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             });
 
             return true;
+        }
+
+        public void UpdateIconPath(Theme newTheme)
+        {
+            _iconPath = newTheme switch
+            {
+                Theme.Dark or Theme.HighContrastBlack or Theme.HighContrastWhite => "Images/ScriptRunner.dark.png",
+                _ => "Images/ScriptRunner.light.png",
+            };
         }
     }
 }
