@@ -1,6 +1,7 @@
 using ManagedCommon;
 using System.Diagnostics;
 using System.IO;
+using System.Text.Json;
 using Wox.Plugin;
 
 namespace Community.PowerToys.Run.Plugin.ScriptRunner
@@ -67,6 +68,18 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
                 Theme.Dark or Theme.HighContrastBlack or Theme.HighContrastWhite => "Images/ScriptRunner.dark.png",
                 _ => "Images/ScriptRunner.light.png",
             };
+        }
+
+        public IEnumerable<ScriptDto> LoadScriptDtos()
+        {
+            ArgumentNullException.ThrowIfNull(ConfigFilePath);
+
+            if (!File.Exists(ConfigFilePath))
+            {
+                return [];
+            }
+            var json = File.ReadAllText(ConfigFilePath);
+            return JsonSerializer.Deserialize<IEnumerable<ScriptDto>>(json) ?? [];
         }
     }
 }

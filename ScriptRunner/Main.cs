@@ -31,7 +31,8 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
         /// </summary>
         public string Description => Resources.plugin_description;
 
-        private ConfigFile _configFile;
+        private readonly ConfigFile _configFile;
+        private readonly ResultBuilder _resultBuilder;
 
         private PluginInitContext? _context;
         private bool _disposed;
@@ -42,6 +43,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
         public Main()
         {
             _configFile = new ConfigFile();
+            _resultBuilder = new ResultBuilder();
         }
 
         /// <summary>
@@ -91,16 +93,20 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
         {
             ArgumentNullException.ThrowIfNull(query);
 
-            var results = new List<Result>();
-
             // empty query
             if (string.IsNullOrEmpty(query.Search))
             {
-                results.Add(_configFile.BuildOpenConfigFileResult());
-                return results;
+                return new List<Result>{
+                    _configFile.BuildOpenConfigFileResult()
+                };
             }
+            else
+            {
+                var scriptDtos = _configFile.LoadScriptDtos();
+                // TODO: filter configs
+                return [.. _resultBuilder.BuildResults(scriptDtos)];
 
-            return results;
+            }
         }
 
 
