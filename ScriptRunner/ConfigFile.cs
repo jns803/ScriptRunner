@@ -9,12 +9,17 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
     class ConfigFile
     {
         private string? _iconPath;
+        private JsonSerializerOptions _jsonSerializerOptions;
         public const string ConfigFilePathSettingKey = "config-file-path";
         public string ConfigFilePath { get; set; }
 
         public ConfigFile()
         {
             ConfigFilePath = "";
+            _jsonSerializerOptions = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
         }
 
         public Result BuildOpenConfigFileResult()
@@ -79,7 +84,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
                 return [];
             }
             var json = File.ReadAllText(ConfigFilePath);
-            return JsonSerializer.Deserialize<IEnumerable<ScriptDto>>(json) ?? [];
+            return JsonSerializer.Deserialize<IEnumerable<ScriptDto>>(json, _jsonSerializerOptions) ?? [];
         }
     }
 }
