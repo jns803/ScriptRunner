@@ -96,13 +96,14 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             // empty query
             if (string.IsNullOrEmpty(query.Search))
             {
-                return new List<Result>{
+                return [
                     _configFile.BuildOpenConfigFileResult()
-                };
+                ];
             }
             else
             {
                 var scriptDtos = _configFile.LoadScriptDtos();
+                // TODO: validate & transform configs
                 // TODO: filter configs
                 return [.. _resultBuilder.BuildResults(scriptDtos)];
 
