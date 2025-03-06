@@ -6,7 +6,7 @@ using Wox.Plugin;
 
 namespace Community.PowerToys.Run.Plugin.ScriptRunner
 {
-    public class Main : IPlugin, IPluginI18n, IContextMenu, ISettingProvider, IReloadable, IDisposable, IDelayedExecutionPlugin
+    public class Main : IPlugin, IPluginI18n, IContextMenu, ISettingProvider, IReloadable, IDisposable
     {
         // Note:
         // Methods are basically called in the following order:
@@ -31,8 +31,8 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
         /// </summary>
         public string Description => Resources.plugin_description;
 
+        private readonly Scripts _scripts;
         private readonly ConfigFile _configFile;
-        private readonly ResultBuilder _resultBuilder;
 
         private PluginInitContext? _context;
         private bool _disposed;
@@ -42,8 +42,8 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
 
         public Main()
         {
+            _scripts = new Scripts();
             _configFile = new ConfigFile();
-            _resultBuilder = new ResultBuilder();
         }
 
         /// <summary>
@@ -93,29 +93,33 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
         {
             ArgumentNullException.ThrowIfNull(query);
 
-            var scriptDtos = _configFile.LoadScriptDtos();
-            var results = _resultBuilder.BuildResults(scriptDtos)
-                .Append(_configFile.BuildOpenConfigFileResult())
-                .Where(r => r.Title.Contains(query.Search));
-            return [.. results];
+            _scripts.Reload(_configFile.GetScriptConfigs());
+
+            var scripts = _scripts.FindScripts(query.Search);
+
+            var results = scripts.Select(MapToResult).ToList();
+
+            if (results.Count == 0)
+            {
+                results.Add(_configFile.BuildOpenConfigFileResult());
+            }
+            else if (query.Search.Length == 0)
+            {
+                results.Insert(0, _configFile.BuildOpenConfigFileResult());
+            }
+            return results;
         }
 
-
-
-        // TODO: return delayed query results (optional)
-        public List<Result> Query(Query query, bool delayedExecution)
+        private static Result MapToResult(ScriptDto script)
         {
-            ArgumentNullException.ThrowIfNull(query);
-
-            var results = new List<Result>();
-
-            // empty query
-            if (string.IsNullOrEmpty(query.Search))
+            return new Result
             {
-                return results;
-            }
-
-            return results;
+                Title = script.Title,
+                SubTitle = $"{script.SubTitle} (score {script.Score})",
+                IcoPath = script.IconPath,
+                Score = script.Score,
+                Action = script.Action,
+            };
         }
 
         /// <summary>

@@ -75,7 +75,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             };
         }
 
-        public IEnumerable<ScriptDto> LoadScriptDtos()
+        public IEnumerable<ScriptConfigDto> GetScriptConfigs()
         {
             ArgumentNullException.ThrowIfNull(ConfigFilePath);
 
@@ -84,7 +84,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
                 return [];
             }
             var json = File.ReadAllText(ConfigFilePath);
-            return JsonSerializer.Deserialize<IEnumerable<ScriptDto>>(json, _jsonSerializerOptions) ?? [];
+            return JsonSerializer.Deserialize<IEnumerable<ScriptConfigDto>>(json, _jsonSerializerOptions) ?? [];
         }
     }
 }
