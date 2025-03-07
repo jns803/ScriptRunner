@@ -133,6 +133,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
 
             _updateIconPath += _configFile.UpdateIconPath;
             _updateIconPath(_context.API.GetCurrentTheme());
+            _scripts.PublicApi = _context.API;
         }
 
         public string GetTranslatedPluginTitle()
