@@ -114,11 +114,11 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
         {
             return new Result
             {
-                Title = script.Title,
-                SubTitle = $"{script.SubTitle} (score {script.Score})",
+                Title = script.Name,
+                SubTitle = $"{script.ScriptPath} (score {script.Score})",
                 IcoPath = script.IconPath,
                 Score = script.Score,
-                Action = script.Action,
+                Action = script.ExecuteScript,
             };
         }
 

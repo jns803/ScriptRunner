@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Wox.Plugin;
 
@@ -23,39 +25,93 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             _scripts.AddRange(newScripts);
         }
 
+        private string? DetermineWorkingDirectory(string scriptPath)
+        {
+            return Path.GetDirectoryName(scriptPath);
+        }
+
+        private ScriptType GuessScriptType(string scriptPath, string? interpreter)
+        {
+            if (!string.IsNullOrWhiteSpace(interpreter))
+            {
+                return ScriptType.CustomInterpreter;
+            }
+
+            var types = new Dictionary<string, ScriptType>()
+            {
+                { ".bat", ScriptType.Batch },
+                { ".ps1", ScriptType.Powershell },
+                { ".sh", ScriptType.Shell }
+            };
+
+            if (types.TryGetValue(Path.GetExtension(scriptPath), out var type))
+            {
+                return type;
+            }
+            return ScriptType.Unknown;
+        }
+
         private ScriptDto MapToScriptDto(ScriptConfigDto config)
         {
-            var workingDirectory = config.WorkingDirectory ?? Path.GetDirectoryName(config.ScriptPath);
+            var type = GuessScriptType(config.ScriptPath, config.Interpreter);
             var scriptDto = new ScriptDto
             {
-                Title = config.Name,
-                SubTitle = config.ScriptPath,
-                IconPath = "Images/ScriptRunner.light.png",
+                Name = config.Name,
+                ScriptPath = config.ScriptPath,
+                WorkingDirectory = GetWorkingDirectory(config.WorkingDirectory, config.ScriptPath),
+                Arguments = config.Arguments ?? "",
+                Type = type,
+                CustomInterpreter = config.Interpreter,
+                IconPath = GetIconPath(type),
                 Score = 0,
-                Action = action => { return false; }
+                ExecuteScript = action => { return false; }
             };
-            scriptDto.Action = action =>
+            scriptDto.ExecuteScript = action =>
             {
-                if (!VerifyScript(config.ScriptPath))
+                if (!VerifyScript(scriptDto.ScriptPath))
                 {
                     return false;
                 }
 
-                if (!VerifyWorkingDirectory(workingDirectory))
+                if (!VerifyWorkingDirectory(scriptDto.WorkingDirectory))
                 {
                     return false;
                 }
 
-                // TODO: check if file exists
-                // TODO: how to run different script types?
+                switch (scriptDto.Type)
+                {
+                case ScriptType.Batch:
+                    RunBatchScript(scriptDto);
+                    break;
+                case ScriptType.Powershell:
+                    RunPowershellScript(scriptDto);
+                    break;
+                case ScriptType.Shell:
+                    RunShellScript(scriptDto);
+                    break;
+                case ScriptType.CustomInterpreter:
+                    RunCustomInterpreterScript(scriptDto);
+                    break;
+                default:
+                    break;
+                }
                 ScriptWasSelected(scriptDto);
-                RunBatchScript(scriptDto.SubTitle ?? "");
                 return true;
             };
             return scriptDto;
         }
 
-        private bool VerifyScript(string script)
+        private static string GetIconPath(ScriptType type)
+        {
+            return "Images/ScriptRunner.light.png";
+        }
+
+        private string GetWorkingDirectory(string? workingDirectory, string scriptPath)
+        {
+            return workingDirectory ?? Path.GetDirectoryName(scriptPath) ?? "";
+        }
+
+        private bool VerifyScript([NotNullWhen(true)] string script)
         {
             if (string.IsNullOrWhiteSpace(script) ||
                 !File.Exists(script))
@@ -66,7 +122,56 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             return true;
         }
 
-        private bool VerifyWorkingDirectory(string? workingDirectory)
+        private bool VerifyCustomInterpreter([NotNullWhen(true)] string? customInterpreter)
+        {
+            if (string.IsNullOrWhiteSpace(customInterpreter))
+            {
+                PublicApi?.ShowMsg("Interpreter not found", $"Configured interpreter is invalid.");
+                return false;
+            }
+
+            // Handle absolute paths
+            if (Path.IsPathFullyQualified(customInterpreter))
+            {
+                if (File.Exists(customInterpreter))
+                {
+                    return true;
+                }
+                else
+                {
+                    PublicApi?.ShowMsg("Interpreter not found", $"Configured interpreter '{customInterpreter}' does not exist.");
+                    return false;
+                }
+            }
+
+            // Maybe the interpreter can be found in PATH
+            var psi = new ProcessStartInfo
+            {
+                FileName = "cmd.exe",
+                Arguments = $@"/c where {customInterpreter}",
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            using var process = new Process { StartInfo = psi };
+            process.Start();
+            var output = process.StandardOutput.ReadToEnd();
+            process.WaitForExit();
+
+            if (string.IsNullOrWhiteSpace(output))
+            {
+                PublicApi?.ShowMsg("Interpreter not found", $"Configured interpreter '{customInterpreter}' does not exist.");
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+
+        private bool VerifyWorkingDirectory([NotNullWhen(true)] string? workingDirectory)
         {
             if (string.IsNullOrWhiteSpace(workingDirectory) ||
                 !Directory.Exists(workingDirectory))
@@ -77,17 +182,69 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             return true;
         }
 
-        private static void RunBatchScript(string scriptPath)
+        private static bool RunBatchScript(ScriptDto script)
         {
-            // TODO: set working directory
-            // TODO: pass arguments
-            var processInfo = new System.Diagnostics.ProcessStartInfo("cmd.exe", "/c " + scriptPath)
+            var processInfo = new System.Diagnostics.ProcessStartInfo
             {
+                FileName = "cmd.exe",
+                Arguments = $@"/c ""{script.ScriptPath}"" {script.Arguments}",
+                WorkingDirectory = script.WorkingDirectory,
                 CreateNoWindow = false,
                 UseShellExecute = true
             };
 
             System.Diagnostics.Process.Start(processInfo);
+            return true;
+        }
+
+        private bool RunCustomInterpreterScript(ScriptDto script)
+        {
+            if (!VerifyCustomInterpreter(script.CustomInterpreter))
+            {
+                return false;
+            }
+
+            var processInfo = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = script.CustomInterpreter,
+                Arguments = $@"""{script.ScriptPath}"" {script.Arguments}",
+                WorkingDirectory = script.WorkingDirectory,
+                CreateNoWindow = false,
+                UseShellExecute = true
+            };
+
+            System.Diagnostics.Process.Start(processInfo);
+            return true;
+        }
+
+        private static bool RunShellScript(ScriptDto script)
+        {
+            var processInfo = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = @"C:\Program Files\Git\git-bash.exe",
+                Arguments = $@"--no-cd ""{script.ScriptPath}"" {script.Arguments}",
+                WorkingDirectory = script.WorkingDirectory,
+                CreateNoWindow = false,
+                UseShellExecute = true
+            };
+
+            System.Diagnostics.Process.Start(processInfo);
+            return true;
+        }
+
+        private static bool RunPowershellScript(ScriptDto script)
+        {
+            var processInfo = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = "powershell.exe",
+                Arguments = $@"-ExecutionPolicy Bypass -File ""{script.ScriptPath}"" {script.Arguments}",
+                WorkingDirectory = script.WorkingDirectory,
+                CreateNoWindow = false,
+                UseShellExecute = true
+            };
+
+            System.Diagnostics.Process.Start(processInfo);
+            return true;
         }
 
         public IReadOnlyCollection<ScriptDto> FindScripts(string querySearch)
@@ -98,7 +255,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             }
 
             return [.. _scripts
-                .Where(x => x.Title.Contains(querySearch, StringComparison.InvariantCultureIgnoreCase))
+                .Where(x => x.Name.Contains(querySearch, StringComparison.InvariantCultureIgnoreCase))
                 .Select(MapToScore)];
         }
 

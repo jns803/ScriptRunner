@@ -8,7 +8,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
         string? WorkingDirectory,
         string Arguments,
 
-        /// If Interpreter is null, the used interpreter is guessed by the scritps file type.
+        /// If Interpreter is null, the plugin tries to guess it by the file type.
         string? Interpreter
 
     );
