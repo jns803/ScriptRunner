@@ -103,7 +103,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
 
         private static string GetIconPath(ScriptType type)
         {
-            return "Images/ScriptRunner.light.png";
+            return "Images/Script.light.png";
         }
 
         private string GetWorkingDirectory(string? workingDirectory, string scriptPath)
