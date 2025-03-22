@@ -39,13 +39,15 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
         private bool _disposed;
 
         private delegate void UdateIconPathDelegate(Theme theme);
-        private UdateIconPathDelegate? _updateIconPath;
+        private readonly UdateIconPathDelegate _updateIconPath;
 
         public Main()
         {
             var fileSystem = new FileSystem();
             _scripts = new Scripts(fileSystem);
             _configFile = new ConfigFile(fileSystem);
+            _updateIconPath += _configFile.UpdateIconPath;
+            _updateIconPath += _scripts.UpdateIconPath;
         }
 
         /// <summary>
@@ -133,7 +135,6 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _context.API.ThemeChanged += OnThemeChanged;
 
-            _updateIconPath += _configFile.UpdateIconPath;
             _updateIconPath(_context.API.GetCurrentTheme());
             _scripts.PublicApi = _context.API;
         }

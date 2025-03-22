@@ -1,3 +1,4 @@
+using ManagedCommon;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Abstractions;
@@ -5,11 +6,33 @@ using Wox.Plugin;
 
 namespace Community.PowerToys.Run.Plugin.ScriptRunner
 {
-    class Scripts(IFileSystem fileSystem)
+    class Scripts
     {
-        private readonly IFileSystem _fileSystem = fileSystem;
-        public IPublicAPI? PublicApi { get; set; }
+        private readonly IFileSystem _fileSystem;
         private readonly List<ScriptDto> _scripts = [];
+        public IPublicAPI? PublicApi { get; set; }
+        private string _iconPath;
+
+        public Scripts(IFileSystem fileSystem)
+        {
+            _fileSystem = fileSystem;
+            UpdateIconPath(Theme.Light);
+        }
+
+        [MemberNotNull(nameof(_iconPath))]
+        public void UpdateIconPath(Theme newTheme)
+        {
+            _iconPath = newTheme switch
+            {
+                Theme.Light or Theme.HighContrastWhite => "Images/Script.light.png",
+                _ => "Images/Script.dark.png"
+            };
+
+            foreach (var script in _scripts)
+            {
+                script.IconPath = _iconPath;
+            }   
+        }
 
         public void Reload(IEnumerable<ScriptConfigDto> scriptConfigs)
         {
@@ -88,7 +111,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
                 Arguments = config.Arguments ?? "",
                 Type = type,
                 CustomInterpreter = config.Interpreter,
-                IconPath = GetIconPath(type),
+                IconPath = _iconPath,
                 Score = 0,
                 ExecuteScript = action => { return false; }
             };
@@ -125,11 +148,6 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
                 return true;
             };
             return scriptDto;
-        }
-
-        private static string GetIconPath(ScriptType type)
-        {
-            return "Images/Script.light.png";
         }
 
         private string GetWorkingDirectory(string? workingDirectory, string scriptPath)
