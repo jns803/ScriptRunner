@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using ManagedCommon;
 using Microsoft.PowerToys.Settings.UI.Library;
 using Wox.Plugin;
+using System.IO.Abstractions;
 
 namespace Community.PowerToys.Run.Plugin.ScriptRunner
 {
@@ -42,8 +43,9 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
 
         public Main()
         {
+            var fileSystem = new FileSystem();
             _scripts = new Scripts();
-            _configFile = new ConfigFile();
+            _configFile = new ConfigFile(fileSystem);
         }
 
         /// <summary>
