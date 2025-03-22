@@ -24,8 +24,6 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
 
         public required int Score {get; set;}
 
-        public required Func<ActionContext, bool> ExecuteScript { get; set; }
-
         public override bool Equals(object? obj)
         {
             if (obj is ScriptDto other)

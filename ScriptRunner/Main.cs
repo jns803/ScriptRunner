@@ -34,6 +34,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
 
         private readonly Scripts _scripts;
         private readonly ConfigFile _configFile;
+        private readonly ResultActionBuilder _resultActionBuilder;
 
         private PluginInitContext? _context;
         private bool _disposed;
@@ -46,6 +47,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             var fileSystem = new FileSystem();
             _scripts = new Scripts(fileSystem);
             _configFile = new ConfigFile(fileSystem);
+            _resultActionBuilder = new ResultActionBuilder(fileSystem);
             _updateIconPath += _configFile.UpdateIconPath;
             _updateIconPath += _scripts.UpdateIconPath;
         }
@@ -114,7 +116,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             return results;
         }
 
-        private static Result MapToResult(ScriptDto script)
+        private Result MapToResult(ScriptDto script)
         {
             return new Result
             {
@@ -122,7 +124,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
                 SubTitle = script.ScriptPath,
                 IcoPath = script.IconPath,
                 Score = script.Score,
-                Action = script.ExecuteScript,
+                Action = _resultActionBuilder.BuildAction(script)
             };
         }
 
@@ -136,7 +138,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             _context.API.ThemeChanged += OnThemeChanged;
 
             _updateIconPath(_context.API.GetCurrentTheme());
-            _scripts.PublicApi = _context.API;
+            _resultActionBuilder.PublicApi = _context.API;
         }
 
         public string GetTranslatedPluginTitle()
