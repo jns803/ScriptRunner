@@ -119,7 +119,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             return new Result
             {
                 Title = script.Name,
-                SubTitle = $"{script.ScriptPath} (score {script.Score})",
+                SubTitle = script.ScriptPath,
                 IcoPath = script.IconPath,
                 Score = script.Score,
                 Action = script.ExecuteScript,
