@@ -53,4 +53,7 @@
       <PackageReference Include="Community.PowerToys.Run.Plugin.Dependencies" Version="*" />
     </ItemGroup>
 
+    <ItemGroup>
+      <InternalsVisibleTo Include="ScriptRunner.UnitTests" />
+    </ItemGroup>
 </Project>
