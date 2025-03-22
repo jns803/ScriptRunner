@@ -25,11 +25,6 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             _scripts.AddRange(newScripts);
         }
 
-        private string? DetermineWorkingDirectory(string scriptPath)
-        {
-            return Path.GetDirectoryName(scriptPath);
-        }
-
         private ScriptType GuessScriptType(string scriptPath, string? interpreter)
         {
             if (!string.IsNullOrWhiteSpace(interpreter))
