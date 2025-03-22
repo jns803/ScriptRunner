@@ -73,8 +73,8 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
         {
             _iconPath = newTheme switch
             {
-                Theme.Dark or Theme.HighContrastBlack or Theme.HighContrastWhite => "Images/Config.dark.png",
-                _ => "Images/Config.light.png",
+                Theme.Light or Theme.HighContrastWhite => "Images/Config.light.png",
+                _ => "Images/Config.dark.png"
             };
         }
 

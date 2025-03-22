@@ -123,5 +123,31 @@ namespace ScriptRunner.UnitTests
             // assert
             result.SubTitle.ShouldBe(configFilePath);
         }
+
+        /// <summary>
+        /// Test for UpdateIconPath method.
+        /// </summary>
+        /// <param name="theme">Pass theme as an int, otherwise some strange run time errors happened</param>
+        [Theory]
+        [InlineData((int)Theme.System, "Images/Config.dark.png")]
+        [InlineData((int)Theme.Light, "Images/Config.light.png")]
+        [InlineData((int)Theme.HighContrastWhite, "Images/Config.light.png")]
+        [InlineData((int)Theme.Dark, "Images/Config.dark.png")]
+        [InlineData((int)Theme.HighContrastOne, "Images/Config.dark.png")]
+        [InlineData((int)Theme.HighContrastTwo, "Images/Config.dark.png")]
+        [InlineData((int)Theme.HighContrastBlack, "Images/Config.dark.png")]
+        public void UpdateIconPath_ShouldSetIconPath_WhenCalled(int theme, string iconPath)
+        {
+            // arrange
+            var mockFileSystem = new MockFileSystem();
+            var uut = new ConfigFile(mockFileSystem);
+
+            // act
+            uut.UpdateIconPath((Theme)theme);
+            var result = uut.BuildOpenConfigFileResult();
+
+            // assert
+            result.IcoPath.ShouldBe(iconPath);
+        }
     }
 }
