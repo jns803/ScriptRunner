@@ -166,6 +166,17 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             return true;
         }
 
+        private bool VerifyWorkingDirectory([NotNullWhen(true)] string? workingDirectory)
+        {
+            if (string.IsNullOrWhiteSpace(workingDirectory) ||
+                !_fileSystem.Directory.Exists(workingDirectory))
+            {
+                PublicApi?.ShowMsg("Working directory not found", $"Configured working directory '{workingDirectory}' does not exist.");
+                return false;
+            }
+            return true;
+        }
+
         private bool VerifyCustomInterpreter([NotNullWhen(true)] string? customInterpreter)
         {
             if (string.IsNullOrWhiteSpace(customInterpreter))
@@ -212,18 +223,6 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             {
                 return true;
             }
-        }
-
-
-        private bool VerifyWorkingDirectory([NotNullWhen(true)] string? workingDirectory)
-        {
-            if (string.IsNullOrWhiteSpace(workingDirectory) ||
-                !_fileSystem.Directory.Exists(workingDirectory))
-            {
-                PublicApi?.ShowMsg("Working directory not found", $"Configured working directory '{workingDirectory}' does not exist.");
-                return false;
-            }
-            return true;
         }
 
         private static bool RunBatchScript(ScriptDto script)
@@ -290,7 +289,5 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             System.Diagnostics.Process.Start(processInfo);
             return true;
         }
-
-
     }
 }
