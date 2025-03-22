@@ -26,6 +26,36 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             _scripts.AddRange(newScripts);
         }
 
+        public IReadOnlyCollection<ScriptDto> FindScripts(string querySearch)
+        {
+            if (string.IsNullOrWhiteSpace(querySearch))
+            {
+                return [.. _scripts.Select(MapToScore)];
+            }
+
+            return [.. _scripts
+                .Where(x => x.Name.Contains(querySearch, StringComparison.InvariantCultureIgnoreCase))
+                .Select(MapToScore)];
+        }
+
+        private ScriptDto MapToScore(ScriptDto script, int i)
+        {
+            script.Score = _scripts.Count + 1 - i;
+            return script;
+        }
+
+        public void ScriptWasSelected(ScriptDto script)
+        {
+            var index = _scripts.IndexOf(script);
+            if (index == -1)
+            {
+                return;
+            }
+
+            _scripts.RemoveAt(index);
+            _scripts.Insert(0, script);
+        }
+
         private ScriptType GuessScriptType(string scriptPath, string? interpreter)
         {
             if (!string.IsNullOrWhiteSpace(interpreter))
@@ -243,34 +273,6 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             return true;
         }
 
-        public IReadOnlyCollection<ScriptDto> FindScripts(string querySearch)
-        {
-            if (string.IsNullOrWhiteSpace(querySearch))
-            {
-                return [.. _scripts.Select(MapToScore)];
-            }
 
-            return [.. _scripts
-                .Where(x => x.Name.Contains(querySearch, StringComparison.InvariantCultureIgnoreCase))
-                .Select(MapToScore)];
-        }
-
-        private ScriptDto MapToScore(ScriptDto script, int i)
-        {
-            script.Score = _scripts.Count + 1 - i;
-            return script;
-        }
-
-        public void ScriptWasSelected(ScriptDto script)
-        {
-            var index = _scripts.IndexOf(script);
-            if (index == -1)
-            {
-                return;
-            }
-
-            _scripts.RemoveAt(index);
-            _scripts.Insert(0, script);
-        }
     }
 }
