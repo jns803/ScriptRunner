@@ -1,12 +1,13 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
+using System.IO.Abstractions;
 using Wox.Plugin;
 
 namespace Community.PowerToys.Run.Plugin.ScriptRunner
 {
-    class Scripts
+    class Scripts(IFileSystem fileSystem)
     {
+        private readonly IFileSystem _fileSystem = fileSystem;
         public IPublicAPI? PublicApi { get; set; }
         private readonly List<ScriptDto> _scripts = [];
 
@@ -39,7 +40,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
                 { ".sh", ScriptType.Shell }
             };
 
-            if (types.TryGetValue(Path.GetExtension(scriptPath), out var type))
+            if (types.TryGetValue(_fileSystem.Path.GetExtension(scriptPath), out var type))
             {
                 return type;
             }
@@ -103,13 +104,13 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
 
         private string GetWorkingDirectory(string? workingDirectory, string scriptPath)
         {
-            return workingDirectory ?? Path.GetDirectoryName(scriptPath) ?? "";
+            return workingDirectory ?? _fileSystem.Path.GetDirectoryName(scriptPath) ?? "";
         }
 
         private bool VerifyScript([NotNullWhen(true)] string script)
         {
             if (string.IsNullOrWhiteSpace(script) ||
-                !File.Exists(script))
+                !_fileSystem.File.Exists(script))
             {
                 PublicApi?.ShowMsg("Script not found", $"Configured script '{script}' does not exist.");
                 return false;
@@ -126,9 +127,9 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             }
 
             // Handle absolute paths
-            if (Path.IsPathFullyQualified(customInterpreter))
+            if (_fileSystem.Path.IsPathFullyQualified(customInterpreter))
             {
-                if (File.Exists(customInterpreter))
+                if (_fileSystem.File.Exists(customInterpreter))
                 {
                     return true;
                 }
@@ -169,7 +170,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
         private bool VerifyWorkingDirectory([NotNullWhen(true)] string? workingDirectory)
         {
             if (string.IsNullOrWhiteSpace(workingDirectory) ||
-                !Directory.Exists(workingDirectory))
+                !_fileSystem.Directory.Exists(workingDirectory))
             {
                 PublicApi?.ShowMsg("Working directory not found", $"Configured working directory '{workingDirectory}' does not exist.");
                 return false;

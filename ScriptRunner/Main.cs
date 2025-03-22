@@ -44,7 +44,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
         public Main()
         {
             var fileSystem = new FileSystem();
-            _scripts = new Scripts();
+            _scripts = new Scripts(fileSystem);
             _configFile = new ConfigFile(fileSystem);
         }
 
