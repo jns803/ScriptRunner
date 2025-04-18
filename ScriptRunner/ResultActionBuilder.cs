@@ -1,7 +1,7 @@
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO.Abstractions;
 using Wox.Plugin;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Community.PowerToys.Run.Plugin.ScriptRunner
 {
@@ -70,7 +70,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
 
         private static bool RunBatchScript(ScriptDto script)
         {
-            var processInfo = new System.Diagnostics.ProcessStartInfo
+            var processInfo = new ProcessStartInfo
             {
                 FileName = "cmd.exe",
                 Arguments = $@"/c ""{script.ScriptPath}"" {script.Arguments}",
@@ -79,13 +79,13 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
                 UseShellExecute = true
             };
 
-            System.Diagnostics.Process.Start(processInfo);
+            Process.Start(processInfo);
             return true;
         }
 
         private static bool RunPowershellScript(ScriptDto script)
         {
-            var processInfo = new System.Diagnostics.ProcessStartInfo
+            var processInfo = new ProcessStartInfo
             {
                 FileName = "powershell.exe",
                 Arguments = $@"-ExecutionPolicy Bypass -File ""{script.ScriptPath}"" {script.Arguments}",
@@ -94,13 +94,13 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
                 UseShellExecute = true
             };
 
-            System.Diagnostics.Process.Start(processInfo);
+            Process.Start(processInfo);
             return true;
         }
 
         private static bool RunShellScript(ScriptDto script)
         {
-            var processInfo = new System.Diagnostics.ProcessStartInfo
+            var processInfo = new ProcessStartInfo
             {
                 FileName = @"C:\Program Files\Git\git-bash.exe",
                 Arguments = $@"--no-cd ""{script.ScriptPath}"" {script.Arguments}",
@@ -109,7 +109,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
                 UseShellExecute = true
             };
 
-            System.Diagnostics.Process.Start(processInfo);
+            Process.Start(processInfo);
             return true;
         }
 
@@ -122,7 +122,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
                 return false;
             }
 
-            var processInfo = new System.Diagnostics.ProcessStartInfo
+            var processInfo = new ProcessStartInfo
             {
                 FileName = script.CustomInterpreter,
                 Arguments = $@"""{script.ScriptPath}"" {script.Arguments}",
@@ -131,7 +131,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
                 UseShellExecute = true
             };
 
-            System.Diagnostics.Process.Start(processInfo);
+            Process.Start(processInfo);
             return true;
         }
         private bool VerifyCustomInterpreter([NotNullWhen(true)] string? customInterpreter)

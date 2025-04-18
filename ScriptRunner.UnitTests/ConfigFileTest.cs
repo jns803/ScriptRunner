@@ -1,9 +1,6 @@
 using Community.PowerToys.Run.Plugin.ScriptRunner;
-using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
-using System.Text.Json;
 using ManagedCommon;
-using Wox.Plugin;
 
 namespace ScriptRunner.UnitTests
 {
