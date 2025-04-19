@@ -87,7 +87,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
                 return [];
             }
             var json = _fileSystem.File.ReadAllText(ConfigFilePath);
-            return JsonSerializer.Deserialize<IEnumerable<ScriptConfigDto>>(json, _jsonSerializerOptions) ?? [];
+            return JsonSerializer.Deserialize<ConfigDto>(json, _jsonSerializerOptions)?.Scripts ?? [];
         }
     }
 }

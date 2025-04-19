@@ -1,5 +1,9 @@
 namespace Community.PowerToys.Run.Plugin.ScriptRunner
 {
+    public record ConfigDto(
+        ScriptConfigDto[] Scripts
+    );
+
     public record ScriptConfigDto(
         string Name,
         string ScriptPath,
@@ -10,6 +14,5 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
 
         /// If Interpreter is null, the plugin tries to guess it by the file type.
         string? Interpreter
-
     );
 }

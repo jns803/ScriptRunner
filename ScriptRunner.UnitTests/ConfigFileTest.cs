@@ -44,12 +44,13 @@ namespace ScriptRunner.UnitTests
             var configFilePath = "testConfig.json";
             var mockFileSystem = new MockFileSystem(new Dictionary<string, MockFileData>
             {
-                { configFilePath, new MockFileData(@"[{
-                ""ScriptPath"":""path1"",
-                ""WorkingDirectory"":""dir1"",
-                ""Arguments"":""args1"",
-                ""Interpreter"":""interpreter1""
-                }]") }
+                { configFilePath, new MockFileData(@"{
+                ""scripts"": [{
+                    ""ScriptPath"":""path1"",
+                    ""WorkingDirectory"":""dir1"",
+                    ""Arguments"":""args1"",
+                    ""Interpreter"":""interpreter1""
+                }]}") }
             });
             var uut = new ConfigFile(mockFileSystem)
             {
