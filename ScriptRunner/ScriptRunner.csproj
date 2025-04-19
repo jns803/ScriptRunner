@@ -57,4 +57,13 @@
     <ItemGroup>
       <InternalsVisibleTo Include="ScriptRunner.UnitTests" />
     </ItemGroup>
+
+    <ItemGroup>
+      <None Update="DefaultConfig\hello-world.bat">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="DefaultConfig\script-runner-config.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
 </Project>

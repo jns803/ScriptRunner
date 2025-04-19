@@ -76,7 +76,13 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
                 .AdditionalOptions?
                 .FirstOrDefault(x => x.Key == ConfigFile.ConfigFilePathSettingKey)?
                 .TextValue;
-            _configFile.ConfigFilePath = configFilePath ?? "";
+
+            if (string.IsNullOrEmpty(configFilePath))
+            {
+                configFilePath = _configFile.CreateDefaultConfig();
+            }
+
+            _configFile.ConfigFilePath = configFilePath;
         }
 
         /// <summary>
@@ -138,6 +144,8 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             _context.API.ThemeChanged += OnThemeChanged;
 
             _updateIconPath(_context.API.GetCurrentTheme());
+            _configFile.PublicApi = _context.API;
+            _configFile.PluginDirectory = _context.CurrentPluginMetadata.PluginDirectory;
             _resultActionBuilder.PublicApi = _context.API;
         }
 

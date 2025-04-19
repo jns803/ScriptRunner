@@ -16,7 +16,8 @@ gsudo {
 		"Community.PowerToys.Run.Plugin.$safeProjectName.deps.json",
 		"Community.PowerToys.Run.Plugin.$safeProjectName.dll",
 		'plugin.json',
-		'Images'
+		'Images',
+		'DefaultConfig'
 	)
 
 	Set-Location $debug
