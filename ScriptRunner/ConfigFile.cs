@@ -7,7 +7,7 @@ using Wox.Plugin;
 
 namespace Community.PowerToys.Run.Plugin.ScriptRunner
 {
-    class ConfigFile
+    internal class ConfigFile
     {
         internal const string ConfigFilePathSettingKey = "config-file-path";
 
@@ -23,7 +23,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
         private string _iconPath;
         private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public ConfigFile(IFileSystem fileSystem, string pluginDirectory)
+        internal ConfigFile(IFileSystem fileSystem, string pluginDirectory)
         {
             _fileSystem = fileSystem;
             _pluginDirectory = pluginDirectory;

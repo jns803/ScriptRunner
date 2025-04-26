@@ -1,25 +1,23 @@
 using ManagedCommon;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Abstractions;
-using Wox.Plugin;
 
 namespace Community.PowerToys.Run.Plugin.ScriptRunner
 {
-    class Scripts
+    internal class Scripts
     {
         private readonly IFileSystem _fileSystem;
         private readonly List<ScriptDto> _scripts = [];
         private string _iconPath;
 
-        public Scripts(IFileSystem fileSystem)
+        internal Scripts(IFileSystem fileSystem)
         {
             _fileSystem = fileSystem;
             UpdateIconPath(Theme.Light);
         }
 
         [MemberNotNull(nameof(_iconPath))]
-        public void UpdateIconPath(Theme newTheme)
+        internal void UpdateIconPath(Theme newTheme)
         {
             _iconPath = newTheme switch
             {
@@ -33,7 +31,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             }   
         }
 
-        public void Reload(IEnumerable<ScriptConfigDto> scriptConfigs)
+        internal void Reload(IEnumerable<ScriptConfigDto> scriptConfigs)
         {
             var scripts = scriptConfigs.Select(MapToScriptDto).ToList();
 
@@ -48,7 +46,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             _scripts.AddRange(newScripts);
         }
 
-        public IReadOnlyCollection<ScriptDto> FindScripts(string querySearch)
+        internal IReadOnlyCollection<ScriptDto> FindScripts(string querySearch)
         {
             if (string.IsNullOrWhiteSpace(querySearch))
             {

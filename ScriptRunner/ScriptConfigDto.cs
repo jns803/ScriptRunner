@@ -1,6 +1,6 @@
 namespace Community.PowerToys.Run.Plugin.ScriptRunner
 {
-    public record ConfigDto(
+    internal record ConfigDto(
         ScriptConfigDto[] Scripts
     );
 
@@ -26,7 +26,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
     /// The interpreter to use for executing the script (e.g., Python, Bash).
     /// If null, the plugin will attempt to infer the interpreter based on the script file type.
     /// </param>
-    public record ScriptConfigDto(
+    internal record ScriptConfigDto(
         string Name,
         string ScriptPath,
         string? WorkingDirectory,

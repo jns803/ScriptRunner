@@ -1,8 +1,6 @@
-using Wox.Plugin;
-
 namespace Community.PowerToys.Run.Plugin.ScriptRunner
 {
-    public enum ScriptType
+    internal enum ScriptType
     {
         Unknown,
         Batch,
@@ -11,18 +9,18 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
         CustomInterpreter,
     }
 
-    public class ScriptDto
+    internal class ScriptDto
     {
-        public required string Name {get; set;}
-        public required string ScriptPath { get; set; }
-        public required string WorkingDirectory { get; set; }
-        public required string Arguments { get; set; }
-        public required ScriptType Type { get; set; }
+        internal required string Name {get; set;}
+        internal required string ScriptPath { get; set; }
+        internal required string WorkingDirectory { get; set; }
+        internal required string Arguments { get; set; }
+        internal required ScriptType Type { get; set; }
 
-        public required string? CustomInterpreter { get; set; }
-        public required string IconPath {get; set;}
+        internal required string? CustomInterpreter { get; set; }
+        internal required string IconPath {get; set;}
 
-        public required int Score {get; set;}
+        internal required int Score {get; set;}
 
         public override bool Equals(object? obj)
         {

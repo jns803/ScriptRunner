@@ -5,9 +5,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Community.PowerToys.Run.Plugin.ScriptRunner
 {
-    class ResultActionBuilder(IFileSystem fileSystem)
+    internal class ResultActionBuilder(IFileSystem fileSystem)
     {
-        public IPublicAPI? PublicApi { get; set; }
+        internal IPublicAPI? PublicApi { get; set; }
 
         private readonly IFileSystem _fileSystem = fileSystem;
 
