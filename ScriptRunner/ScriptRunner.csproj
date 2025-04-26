@@ -62,7 +62,7 @@
       <None Update="DefaultConfig\hello-world.bat">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-      <None Update="DefaultConfig\script-runner-config.json">
+      <None Update="DefaultConfig\script-runner-config-template.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>

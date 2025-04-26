@@ -11,7 +11,7 @@ namespace ScriptRunner.UnitTests
         {
             // arrange
             var mockFileSystem = new MockFileSystem();
-            var uut = new ConfigFile(mockFileSystem);
+            var uut = new ConfigFile(mockFileSystem, null);
 
             // act
             var configs = uut.GetScriptConfigs();
@@ -25,7 +25,7 @@ namespace ScriptRunner.UnitTests
         {
             // arrange
             var mockFileSystem = new MockFileSystem();
-            var uut = new ConfigFile(mockFileSystem)
+            var uut = new ConfigFile(mockFileSystem, null)
             {
                 ConfigFilePath = "nonexistent.json"
             };
@@ -52,7 +52,7 @@ namespace ScriptRunner.UnitTests
                     ""Interpreter"":""interpreter1""
                 }]}") }
             });
-            var uut = new ConfigFile(mockFileSystem)
+            var uut = new ConfigFile(mockFileSystem, null)
             {
                 ConfigFilePath = configFilePath
             };
@@ -74,7 +74,7 @@ namespace ScriptRunner.UnitTests
         {
             // arrange
             var mockFileSystem = new MockFileSystem();
-            var uut = new ConfigFile(mockFileSystem);
+            var uut = new ConfigFile(mockFileSystem, null);
 
             // act
             var result = uut.BuildOpenConfigFileResult();
@@ -88,7 +88,7 @@ namespace ScriptRunner.UnitTests
         {
             // arrange
             var mockFileSystem = new MockFileSystem();
-            var uut = new ConfigFile(mockFileSystem)
+            var uut = new ConfigFile(mockFileSystem, null)
             {
                 ConfigFilePath = "nonexistent.json"
             };
@@ -110,7 +110,7 @@ namespace ScriptRunner.UnitTests
                 { configFilePath, new MockFileData("{}") }
             });
 
-            var uut = new ConfigFile(mockFileSystem)
+            var uut = new ConfigFile(mockFileSystem, null)
             {
                 ConfigFilePath = configFilePath
             };
@@ -138,7 +138,7 @@ namespace ScriptRunner.UnitTests
         {
             // arrange
             var mockFileSystem = new MockFileSystem();
-            var uut = new ConfigFile(mockFileSystem);
+            var uut = new ConfigFile(mockFileSystem, null);
 
             // act
             uut.UpdateIconPath((Theme)theme);

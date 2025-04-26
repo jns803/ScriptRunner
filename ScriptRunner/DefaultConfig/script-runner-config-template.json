@@ -1,0 +1,10 @@
+{
+  "scripts": [
+    {
+      "name": "Hello World",
+      "scriptPath": "$DEFAULT_CONFIG_DIR$\\hello-world.bat",
+      "workingDirectory": "$DEFAULT_CONFIG_DIR$",
+      "arguments": "--any-arguments-you-like"
+    }
+  ]
+}

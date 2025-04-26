@@ -9,18 +9,25 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
 {
     class ConfigFile
     {
-        public IPublicAPI? PublicApi { get; set; }
-        public string? PluginDirectory { get; set; }
+        internal const string ConfigFilePathSettingKey = "config-file-path";
+
+        internal IPublicAPI? PublicApi { get; set; }
+
+        internal string DefaultConfigDir => _fileSystem.Path.Combine(_pluginDirectory, "DefaultConfig");
+        internal string DefaultConfigFilePath => _fileSystem.Path.Combine(DefaultConfigDir, "script-runner-config.json");
+
+        internal string ConfigFilePath { get; set; }
 
         private readonly IFileSystem _fileSystem;
+        private readonly string _pluginDirectory;
         private string _iconPath;
         private readonly JsonSerializerOptions _jsonSerializerOptions;
-        public const string ConfigFilePathSettingKey = "config-file-path";
-        public string ConfigFilePath { get; set; }
 
-        public ConfigFile(IFileSystem fileSystem)
+        public ConfigFile(IFileSystem fileSystem, string pluginDirectory)
         {
             _fileSystem = fileSystem;
+            _pluginDirectory = pluginDirectory;
+
             ConfigFilePath = "";
             _jsonSerializerOptions = new JsonSerializerOptions
             {
@@ -29,7 +36,25 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             UpdateIconPath(Theme.Light);
         }
 
-        public Result BuildOpenConfigFileResult()
+        /// <summary>
+        /// Creates a default config json which configures a hello world script.
+        /// </summary>
+        internal void CreateDefaultConfig()
+        {
+            var configContent = _fileSystem.File.ReadAllText(_fileSystem.Path.Combine(DefaultConfigDir, "script-runner-config-template.json"));
+
+            var escapedPluginDirectory = DefaultConfigDir.Replace("\\", "\\\\");
+            configContent = configContent.Replace("$DEFAULT_CONFIG_DIR$", escapedPluginDirectory);
+
+            _fileSystem.File.WriteAllText(DefaultConfigFilePath, configContent);
+        }
+
+        internal bool DefaultConfigExists()
+        {
+            return _fileSystem.File.Exists(DefaultConfigFilePath);
+        }
+
+        internal Result BuildOpenConfigFileResult()
         {
             string subTitle;
             if (string.IsNullOrEmpty(ConfigFilePath))
@@ -72,7 +97,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
         }
 
         [MemberNotNull(nameof(_iconPath))]
-        public void UpdateIconPath(Theme newTheme)
+        internal void UpdateIconPath(Theme newTheme)
         {
             _iconPath = newTheme switch
             {
@@ -81,7 +106,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             };
         }
 
-        public IEnumerable<ScriptConfigDto> GetScriptConfigs()
+        internal IEnumerable<ScriptConfigDto> GetScriptConfigs()
         {
             ArgumentNullException.ThrowIfNull(ConfigFilePath);
 
@@ -91,38 +116,6 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             }
             var json = _fileSystem.File.ReadAllText(ConfigFilePath);
             return JsonSerializer.Deserialize<ConfigDto>(json, _jsonSerializerOptions)?.Scripts ?? [];
-        }
-
-        /// <summary>
-        /// Creates a default config json which configures a hello world script.
-        /// </summary>
-        internal string CreateDefaultConfig()
-        {
-            if (string.IsNullOrEmpty(PluginDirectory))
-            {
-                return string.Empty;
-            }
-
-            try
-            {
-                var defaultConfigPath = _fileSystem.Path.Combine(PluginDirectory, "DefaultConfig");
-
-                var configContent = _fileSystem.File.ReadAllText(_fileSystem.Path.Combine(defaultConfigPath, "script-runner-config.json"));
-
-                var escapedPluginDirectory = PluginDirectory.Replace("\\", "\\\\");
-                configContent = configContent.Replace("$BASE_DIR$", escapedPluginDirectory);
-
-                var configFilePath = _fileSystem.Path.Combine(PluginDirectory, $"script-runner-config-{Guid.NewGuid()}.json");
-
-                _fileSystem.File.WriteAllText(configFilePath, configContent);
-
-                return configFilePath;
-            }
-            catch (Exception ex)
-            {
-                PublicApi?.ShowMsg("ScriptRunner", $"Could not setup default config (error: {ex.Message}");
-                return string.Empty;
-            }
         }
     }
 }

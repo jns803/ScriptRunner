@@ -1,17 +1,19 @@
 using Community.PowerToys.Run.Plugin.ScriptRunner.Properties;
-using System.Windows.Controls;
 using ManagedCommon;
 using Microsoft.PowerToys.Settings.UI.Library;
-using Wox.Plugin;
 using System.IO.Abstractions;
+using System.IO;
+using System.Windows.Controls;
+using Wox.Plugin;
 
 namespace Community.PowerToys.Run.Plugin.ScriptRunner
 {
     public class Main : IPlugin, IPluginI18n, IContextMenu, ISettingProvider, IReloadable, IDisposable
     {
         // Note:
-        // Methods are basically called in the following order:
+        // Methods are called in following order:
         // - Constructor --> logical
+        // - AdditionalOptions()
         // - UpdateSettings()  --> unexpected
         // - Init()
         // - Query()
@@ -45,8 +47,11 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
         public Main()
         {
             var fileSystem = new FileSystem();
+            var pluginDirectory = fileSystem.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)
+                ?? throw new DirectoryNotFoundException("Plugin directory not found.");
+
             _scripts = new Scripts(fileSystem);
-            _configFile = new ConfigFile(fileSystem);
+            _configFile = new ConfigFile(fileSystem, pluginDirectory);
             _resultActionBuilder = new ResultActionBuilder(fileSystem);
             _updateIconPath += _configFile.UpdateIconPath;
             _updateIconPath += _scripts.UpdateIconPath;
@@ -63,6 +68,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
                 Key = ConfigFile.ConfigFilePathSettingKey,
                 DisplayLabel = Resources.config_file_setting_title,
                 DisplayDescription = Resources.config_file_setting_description,
+                PlaceholderText = _configFile.DefaultConfigFilePath
             },
         ];
 
@@ -79,7 +85,11 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
 
             if (string.IsNullOrEmpty(configFilePath))
             {
-                configFilePath = _configFile.CreateDefaultConfig();
+                if (!_configFile.DefaultConfigExists())
+                {
+                    _configFile.CreateDefaultConfig();
+                }
+                configFilePath = _configFile.DefaultConfigFilePath;
             }
 
             _configFile.ConfigFilePath = configFilePath;
@@ -145,7 +155,6 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
 
             _updateIconPath(_context.API.GetCurrentTheme());
             _configFile.PublicApi = _context.API;
-            _configFile.PluginDirectory = _context.CurrentPluginMetadata.PluginDirectory;
             _resultActionBuilder.PublicApi = _context.API;
         }
 
