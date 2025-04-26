@@ -59,7 +59,7 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             string subTitle;
             if (string.IsNullOrEmpty(ConfigFilePath))
             {
-                subTitle = "Please specify a config json in the plugin options";
+                subTitle = "Please specify a config json in the plugin options.";
             }
             else if (!_fileSystem.File.Exists(ConfigFilePath))
             {
@@ -82,8 +82,14 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
 
         private bool OpenConfigFile()
         {
-            if (string.IsNullOrEmpty(ConfigFilePath) || !_fileSystem.File.Exists(ConfigFilePath))
+            if (string.IsNullOrEmpty(ConfigFilePath))
             {
+                PublicApi?.ShowMsg("Config not found", "Please specify a config json in the plugin options.");
+                return false;
+            }
+            else if (!_fileSystem.File.Exists(ConfigFilePath))
+            {
+                PublicApi?.ShowMsg("Config not found", $"'{ConfigFilePath} does not exist'");
                 return false;
             }
 
@@ -96,16 +102,6 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             return true;
         }
 
-        [MemberNotNull(nameof(_iconPath))]
-        internal void UpdateIconPath(Theme newTheme)
-        {
-            _iconPath = newTheme switch
-            {
-                Theme.Light or Theme.HighContrastWhite => "Images/Config.light.png",
-                _ => "Images/Config.dark.png"
-            };
-        }
-
         internal IEnumerable<ScriptConfigDto> GetScriptConfigs()
         {
             ArgumentNullException.ThrowIfNull(ConfigFilePath);
@@ -116,6 +112,16 @@ namespace Community.PowerToys.Run.Plugin.ScriptRunner
             }
             var json = _fileSystem.File.ReadAllText(ConfigFilePath);
             return JsonSerializer.Deserialize<ConfigDto>(json, _jsonSerializerOptions)?.Scripts ?? [];
+        }
+
+        [MemberNotNull(nameof(_iconPath))]
+        internal void UpdateIconPath(Theme newTheme)
+        {
+            _iconPath = newTheme switch
+            {
+                Theme.Light or Theme.HighContrastWhite => "Images/Config.light.png",
+                _ => "Images/Config.dark.png"
+            };
         }
     }
 }
