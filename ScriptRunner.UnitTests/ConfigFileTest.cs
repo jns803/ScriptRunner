@@ -80,7 +80,7 @@ namespace ScriptRunner.UnitTests
             var result = uut.BuildOpenConfigFileResult();
 
             // assert
-            result.SubTitle.ShouldBe("Please specify a config json in the plugin options");
+            result.SubTitle.ShouldBe("Please specify a config json in the plugin options.");
         }
 
         [Fact]
