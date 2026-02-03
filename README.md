@@ -55,3 +55,17 @@ shell scripts  or even a custom interpreter, ScriptRunner got you covered.
 ## Contributing
 
 Contributions are welcome! Feel free to open issues or submit pull requests to improve the plugin.
+
+### Build and run locally
+
+- Build/Rebuild solution
+- Run script `.\ScriptRunner\debug.ps1` to install the plugin locally (requires [gsudo] to be installed)
+
+### Get the NuGet package versions right
+
+ScriptRunner uses [`Community.PowerToys.Run.Plugin.Dependencies`]. The version needs to match the Power Toys version.
+
+Additionally the packages `TestableIO.System.IO.Abstractions.Wrappers` and `TestableIO.System.IO.Abstractions.TestingHelpers` are used to simplify unit testing. The versions of these packages need to match the versions of the dlls installed in `C:\Program Files\PowerToys`. Otherwise ScriptRunner fails to start.
+
+[gsudo]: https://github.com/gerardog/gsudo
+[`Community.PowerToys.Run.Plugin.Dependencies`]:(https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Dependencies)
