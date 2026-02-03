@@ -5,7 +5,7 @@
 	"IsGlobal": false,
 	"Name": "ScriptRunner",
 	"Author": "jns803",
-	"Version": "0.1.0",
+	"Version": "0.2.0",
 	"Language": "csharp",
 	"Website": "https://github.com/jns803/ScriptRunner",
 	"ExecuteFileName": "Community.PowerToys.Run.Plugin.ScriptRunner.dll",
