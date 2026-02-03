@@ -11,7 +11,8 @@ namespace ScriptRunner.UnitTests
         {
             // arrange
             var mockFileSystem = new MockFileSystem();
-            var uut = new ConfigFile(mockFileSystem, null);
+            var tempDir = mockFileSystem.Path.GetTempPath();
+            var uut = new ConfigFile(mockFileSystem, tempDir);
 
             // act
             var configs = uut.GetScriptConfigs();
@@ -25,7 +26,8 @@ namespace ScriptRunner.UnitTests
         {
             // arrange
             var mockFileSystem = new MockFileSystem();
-            var uut = new ConfigFile(mockFileSystem, null)
+            var tempDir = mockFileSystem.Path.GetTempPath();
+            var uut = new ConfigFile(mockFileSystem, tempDir)
             {
                 ConfigFilePath = "nonexistent.json"
             };
@@ -52,7 +54,8 @@ namespace ScriptRunner.UnitTests
                     ""Interpreter"":""interpreter1""
                 }]}") }
             });
-            var uut = new ConfigFile(mockFileSystem, null)
+            var tempDir = mockFileSystem.Path.GetTempPath();
+            var uut = new ConfigFile(mockFileSystem, tempDir)
             {
                 ConfigFilePath = configFilePath
             };
@@ -74,7 +77,8 @@ namespace ScriptRunner.UnitTests
         {
             // arrange
             var mockFileSystem = new MockFileSystem();
-            var uut = new ConfigFile(mockFileSystem, null);
+            var tempDir = mockFileSystem.Path.GetTempPath();
+            var uut = new ConfigFile(mockFileSystem, tempDir);
 
             // act
             var result = uut.BuildOpenConfigFileResult();
@@ -88,7 +92,8 @@ namespace ScriptRunner.UnitTests
         {
             // arrange
             var mockFileSystem = new MockFileSystem();
-            var uut = new ConfigFile(mockFileSystem, null)
+            var tempDir = mockFileSystem.Path.GetTempPath();
+            var uut = new ConfigFile(mockFileSystem, tempDir)
             {
                 ConfigFilePath = "nonexistent.json"
             };
@@ -109,8 +114,9 @@ namespace ScriptRunner.UnitTests
             {
                 { configFilePath, new MockFileData("{}") }
             });
+            var tempDir = mockFileSystem.Path.GetTempPath();
 
-            var uut = new ConfigFile(mockFileSystem, null)
+            var uut = new ConfigFile(mockFileSystem, tempDir)
             {
                 ConfigFilePath = configFilePath
             };
@@ -138,7 +144,8 @@ namespace ScriptRunner.UnitTests
         {
             // arrange
             var mockFileSystem = new MockFileSystem();
-            var uut = new ConfigFile(mockFileSystem, null);
+            var tempDir = mockFileSystem.Path.GetTempPath();
+            var uut = new ConfigFile(mockFileSystem, tempDir);
 
             // act
             uut.UpdateIconPath((Theme)theme);
